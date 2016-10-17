@@ -52,7 +52,7 @@ DEFAULT_BAUDRATE = 115200
 try:
     DEFAULT_PORT = list_ports()[0]
 except:
-    print("No device attached")
+    print("tidak ditemukan")
     sys.exit(1)
 
 DEFAULT_FIXTURE = './fixtures.json'
@@ -96,7 +96,7 @@ def main(argv):
             baudrate=baudrate
         )
     except (OSError, serial.SerialException):
-        print("fail to open serial port: ",port)
+        print("kegagalan dalam membuka port: ",port)
         sys.exit(-1)
 
     # check if serial is opened
@@ -107,7 +107,7 @@ def main(argv):
         data = json.load(data_file)
         print_decorator('HEADER',data['title']+CRLF)
         test_command = 'AT'.encode() + CRLF
-        print_decorator('UNDERLINE','initialization....')
+        print_decorator('UNDERLINE','memulai....')
         # warming up serial port
         ser.write(test_command)
         time.sleep(DELAY_MESSAGE)
@@ -150,13 +150,15 @@ def main(argv):
                 print_decorator('OKBLUE'," ?expected: "+expect_test)
                 print_decorator('FAIL'," !actual: "+incoming_msg)
               test_color = 'OKGREEN' if result_test else 'FAIL'
-              print_decorator(test_color,"test passed: "+str(result_test))
+              print_decorator(test_color,"tes lolos? : "+str(result_test))
               # fixture passed?
               fixture_passed = fixture_passed and result_test
               print_decorator('BOLD',"-----------------------"+CRLF)
+            else:
+              fixture_passed = False
         ser.close()
         test_color = 'OKGREEN' if fixture_passed else 'FAIL'
-        print_decorator(test_color,"fixtures passed: "+str(fixture_passed))
+        print_decorator(test_color,"\r\ntes lolos? : "+ ('YA' if fixture_passed else 'TIDAK'))
         sys.exit(0)
 
 if __name__ == "__main__":
