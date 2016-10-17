@@ -41,13 +41,20 @@ def print_decorator(print_type, msg):
         'BOLD' : '\033[1m',
         'UNDERLINE' : '\033[4m',
     }.get(print_type, '\033[0m')
-    print print_color + msg + '\033[0m'
+    # print print_color + msg + '\033[0m'
+    print msg
 
 # constant
 DELAY_MESSAGE = 2
 CRLF = '\r\n'
 DEFAULT_BAUDRATE = 115200
-DEFAULT_PORT = list_ports()[0]
+
+try:
+    DEFAULT_PORT = list_ports()[0]
+except:
+    print("No device attached")
+    sys.exit(1)
+
 DEFAULT_FIXTURE = './fixtures.json'
 
 def main(argv):
@@ -76,17 +83,22 @@ def main(argv):
          for port in ports:
              print(port)
          sys.exit(0)
-         
+
     # default value
     port = port if (port != '') else DEFAULT_PORT
     fixtures_file = fixtures_file if (fixtures_file != '') else DEFAULT_FIXTURE
     baudrate = baudrate if (baudrate > 0) else DEFAULT_BAUDRATE
     # configure the serial connections (the parameters differs on the device you are connecting to)
     # the device use 8 data bit, none parity bit, and one stop bit setting.
-    ser = serial.Serial(
-        port=port,
-        baudrate=baudrate
-    )
+    try:
+        ser = serial.Serial(
+            port=port,
+            baudrate=baudrate
+        )
+    except (OSError, serial.SerialException):
+        print("fail to open serial port: ",port)
+        sys.exit(-1)
+
     # check if serial is opened
     if not ser.isOpen():
         ser.open()
@@ -145,7 +157,7 @@ def main(argv):
         ser.close()
         test_color = 'OKGREEN' if fixture_passed else 'FAIL'
         print_decorator(test_color,"fixtures passed: "+str(fixture_passed))
-        exit()
+        sys.exit(0)
 
 if __name__ == "__main__":
     main(sys.argv[1:])
