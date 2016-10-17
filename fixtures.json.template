@@ -1,5 +1,5 @@
 {
-	"title":"Test Case v0.1",
+	"title":"Test Case v1.1.5",
 	"fixtures":[
 		{
 			"command":"AT",
@@ -8,19 +8,28 @@
 		},
 		{
 			"command":"AT+TIME={}",
-			"params":["1474197975"],
-			"assert":"contain",
-			"expect":"OK"
+			"params":["1476711772"],
+			"assert":"exact",
+			"expect":"OK",
+			"warning":"RTC Bermasalah"
 		},
 		{
 			"command":"AT+TIME?",
 			"assert":"contains",
-			"expect":["+TIME","147419797"]
+			"expect":["+TIME","147671177"],
+			"warning":"RTC Bermasalah"
 		},
 		{
 			"command":"AT+VRSI",
 			"assert":"contains",
-			"expect":["1.0.3","Arwana"]
+			"expect":["1.1.5","Belida"],
+			"warning":"Versi tidak sesuai"
+		},
+		{
+			"command":"AT+VRSI",
+			"assert":"contain",
+			"expect":"+VRSI: 0x0",
+			"warning":"SD Card bermasalah"
 		}
 	]
 }
