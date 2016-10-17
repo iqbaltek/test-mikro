@@ -111,6 +111,7 @@ def main(argv):
         # warming up serial port
         ser.write(test_command)
         time.sleep(DELAY_MESSAGE)
+        warning = []
         for fixture in data['fixtures']:
             ser.flushInput()
             command_test = fixture['command']
@@ -149,6 +150,7 @@ def main(argv):
                     expect_test = ", ".join(expect_test)
                 print_decorator('OKBLUE'," ?expected: "+expect_test)
                 print_decorator('FAIL'," !actual: "+incoming_msg)
+                warning.append(fixture["warning"])
               test_color = 'OKGREEN' if result_test else 'FAIL'
               print_decorator(test_color,"tes lolos? : "+str(result_test))
               # fixture passed?
@@ -156,9 +158,12 @@ def main(argv):
               print_decorator('BOLD',"-----------------------"+CRLF)
             else:
               fixture_passed = False
+              warning.append("mikro tidak merespon sama sekali")
         ser.close()
         test_color = 'OKGREEN' if fixture_passed else 'FAIL'
-        print_decorator(test_color,"\r\ntes lolos? : "+ ('YA' if fixture_passed else 'TIDAK'))
+        for warn in warning:
+            print_decorator('FAIL',"peringatan: "+warn)
+        print_decorator(test_color,"tes lolos? : "+ ('YA' if fixture_passed else 'TIDAK'))
         sys.exit(0)
 
 if __name__ == "__main__":
