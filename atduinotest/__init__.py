@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import time
 import sys
 import glob
@@ -50,20 +48,22 @@ DEFAULT_BAUDRATE = 115200
 DEFAULT_PORT = list_ports()[0]
 DEFAULT_FIXTURE = './fixtures.json'
 
-def main(argv):
+def cli(argv=None):
+    if argv == None:
+      argv = sys.argv[1:]
     # get input
     port = ''
     fixtures_file = ''
     baudrate = 0
     fixture_passed = True
     try:
-      opts, args = getopt.getopt(argv,"hi:o:",["port=","fixtures=",'baudrate='])
+      opts, args = getopt.getopt(argv,"hi:o:",["port=","fixtures=",'baudrate=','list'])
     except getopt.GetoptError:
-      print_decorator('WARNING','assert_serial.py --port <port> --fixtures <fixtures_file> --baudrate <baudrate_value>')
+      print_decorator('WARNING','--list | --port <port> --fixtures <fixtures_file> --baudrate <baudrate_value>')
       sys.exit(2)
     for opt, arg in opts:
       if opt in ("-h", "--help"):
-         print_decorator('WARNING','assert_serial.py -p <port> -f <fixtures_file> -b <baudrate_value>')
+         print_decorator('WARNING','--list | --port <port> --fixtures <fixtures_file> --baudrate <baudrate_value>')
          sys.exit()
       elif opt in ("-p", "--port"):
          port = arg
@@ -71,6 +71,12 @@ def main(argv):
          fixtures_file = arg
       elif opt in ("-b", "--baudrate"):
          baudrate = arg
+      elif opt in ("-l", "--list"):
+         ports = list_ports();
+         for port in ports:
+             print(port)
+         sys.exit(0)
+         
     # default value
     port = port if (port != '') else DEFAULT_PORT
     fixtures_file = fixtures_file if (fixtures_file != '') else DEFAULT_FIXTURE
@@ -140,6 +146,3 @@ def main(argv):
         test_color = 'OKGREEN' if fixture_passed else 'FAIL'
         print_decorator(test_color,"fixtures passed: "+str(fixture_passed))
         exit()
-
-if __name__ == "__main__":
-    main(sys.argv[1:])
